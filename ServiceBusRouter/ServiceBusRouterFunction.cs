@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
+using System;
 using System.Collections.Generic;
 
 namespace ServiceBusRouter
@@ -11,6 +12,7 @@ namespace ServiceBusRouter
             new Dictionary<string, string>
             {
                 { "input", "output" },
+                { "input2", "output2" },
             };
            
         [FunctionName("ServiceBusRouterFunction")]
@@ -33,8 +35,9 @@ namespace ServiceBusRouter
             else
             {
                 log.Warning($"Could not retrieve output CorrelationId for: '{inputCorrelationId}'");
-                log.Warning($"Dropping message: '{inputMessage.MessageId}'");
-                return null;
+                log.Warning($"Abandoning message: '{inputMessage.MessageId}'");
+                throw new InvalidOperationException(
+                    $"Could not route message '{inputMessage.MessageId}' with CorrelationId '{inputCorrelationId}'.");
             }
         }
 
