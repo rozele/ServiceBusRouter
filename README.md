@@ -18,7 +18,12 @@ The purpose of the Azure Function is to use the correlation ID provided by the p
 * Azure Service Bus Topic called `outtopic` in Azure Service Bus Namespace
 * Azure Service Bus Subscription in Azure Service Bus Topic
 
-TODO: Add a one-click deploy Azure button to configure the Storage account and the Service Bus.
+Or... click to deploy with default queues and topics.
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Frozele%2FServiceBusRouter%2Fmaster%2Fscripts%2Fazuredeploy.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+
 
 ### Running the Solution
 

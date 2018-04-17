@@ -1,0 +1,145 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "serviceBusNamespaceName": {
+        "type": "string",
+        "metadata": {
+          "description": "Service Bus Namespace Name"
+        }
+      }
+    },
+    "variables": {
+      "apiVersion": "2017-04-01"
+    },
+    "resources": [
+      {
+        "apiVersion": "[variables('apiVersion')]",
+        "name": "[parameters('serviceBusNamespaceName')]",
+        "type": "Microsoft.ServiceBus/namespaces",
+        "location": "[resourceGroup().location]",
+        "properties": {},
+        "resources": [
+          {
+            "type": "AuthorizationRules",
+            "name": "Send",
+            "apiVersion": "[variables('apiVersion')]",
+            "scale": null,
+            "properties": {
+              "rights": [ "Send" ]
+            },
+            "dependsOn": [
+              "[parameters('serviceBusNamespaceName')]"
+            ]
+          },
+          {
+            "type": "AuthorizationRules",
+            "name": "Listen",
+            "apiVersion": "[variables('apiVersion')]",
+            "scale": null,
+            "properties": {
+              "rights": [ "Listen" ]
+            },
+            "dependsOn": [
+              "[parameters('serviceBusNamespaceName')]"
+            ]
+          },
+          {
+            "type": "AuthorizationRules",
+            "name": "SendListen",
+            "apiVersion": "[variables('apiVersion')]",
+            "scale": null,
+            "properties": {
+              "rights": [ "Listen", "Send" ]
+            },
+            "dependsOn": [
+              "[parameters('serviceBusNamespaceName')]"
+            ]
+          },
+          {
+            "type": "AuthorizationRules",
+            "name": "Manage",
+            "apiVersion": "[variables('apiVersion')]",
+            "scale": null,
+            "properties": {
+              "rights": [ "Listen", "Send", "Manage" ]
+            },
+            "dependsOn": [
+              "[parameters('serviceBusNamespaceName')]"
+            ]
+          },
+          {
+            "apiVersion": "[variables('apiVersion')]",
+            "name": "myqueue",
+            "type": "queues",
+            "dependsOn": [
+              "[concat('Microsoft.ServiceBus/namespaces/', parameters('serviceBusNamespaceName'))]",
+              "Send",
+              "Listen",
+              "SendListen",
+              "Manage"
+            ],
+            "properties": {},
+            "resources": []
+          },
+          {
+            "apiVersion": "[variables('apiVersion')]",
+            "name": "outtopic",
+            "type": "topics",
+            "dependsOn": [
+              "[concat('Microsoft.ServiceBus/namespaces/', parameters('serviceBusNamespaceName'))]",
+              "Send",
+              "Listen",
+              "SendListen",
+              "Manage"
+            ],
+            "properties": {},
+            "resources": [
+              {
+                "apiVersion": "[variables('apiVersion')]",
+                "name": "testsubscription",
+                "type": "subscriptions",
+                "dependsOn": [ "TopicFilterSampleTopic" ],
+                "properties": {
+                },
+                "resources": [
+                  {
+                    "apiVersion": "[variables('apiVersion')]",
+                    "name": "rule1",
+                    "type": "rules",
+                    "dependsOn": [ "outtopic" ],
+                    "properties": {
+                      "filterType": "CorrelationFilter",
+                      "correlationFilter": {
+                        "label": "rule1filter",
+                        "correlationId": "output"
+                      }
+                    }
+                  },
+                  {
+                    "apiVersion": "[variables('apiVersion')]",
+                    "name": "rule2",
+                    "type": "rules",
+                    "dependsOn": [ "outtopic" ],
+                    "properties": {
+                      "filterType": "CorrelationFilter",
+                      "correlationFilter": {
+                        "label": "rule2filter",
+                        "correlationId": "output2"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "outputs": {
+      "serviceBusNamespaceName": {
+        "type": "string",
+        "value": "[parameters('serviceBusNamespaceName')]"
+      }
+    }
+  }
