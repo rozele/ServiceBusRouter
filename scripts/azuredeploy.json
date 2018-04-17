@@ -99,7 +99,7 @@
                 "apiVersion": "[variables('apiVersion')]",
                 "name": "testsubscription",
                 "type": "subscriptions",
-                "dependsOn": [ "TopicFilterSampleTopic" ],
+                "dependsOn": [ "outtopic" ],
                 "properties": {
                 },
                 "resources": [
