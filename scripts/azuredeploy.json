@@ -97,7 +97,7 @@
             "resources": [
               {
                 "apiVersion": "[variables('apiVersion')]",
-                "name": "testsubscription",
+                "name": "testsub1",
                 "type": "subscriptions",
                 "dependsOn": [ "outtopic" ],
                 "properties": {
@@ -107,30 +107,38 @@
                     "apiVersion": "[variables('apiVersion')]",
                     "name": "rule1",
                     "type": "rules",
-                    "dependsOn": [ "outtopic" ],
+                    "dependsOn": [ "testsub1" ],
                     "properties": {
                       "filterType": "CorrelationFilter",
                       "correlationFilter": {
-                        "label": "rule1filter",
                         "correlationId": "output"
                       }
                     }
-                  },
+                  }
+                ]
+              },
+              {
+                "apiVersion": "[variables('apiVersion')]",
+                "name": "testsub2",
+                "type": "subscriptions",
+                "dependsOn": [ "outtopic" ],
+                "properties": {
+                },
+                "resources": [
                   {
                     "apiVersion": "[variables('apiVersion')]",
                     "name": "rule2",
                     "type": "rules",
-                    "dependsOn": [ "outtopic" ],
+                    "dependsOn": [ "testsub2" ],
                     "properties": {
                       "filterType": "CorrelationFilter",
                       "correlationFilter": {
-                        "label": "rule2filter",
                         "correlationId": "output2"
                       }
                     }
                   }
                 ]
-              }
+              }              
             ]
           }
         ]
